@@ -11,12 +11,8 @@
         </div>
         <div class="description">{{ seller.description}}/{{seller.deliveryTime}}分钟送达</div>
         <div v-if="seller.supports" class="support">
-          <span class="icon" :class="classMap[seller.supports[0].type]"></span>
+          <span class="icon"></span>
           <span class="text">{{ seller.supports[0].description}}</span>
-        </div>
-        <div v-if="seller.supports" class="support-count">
-          <span class="count">{{ seller.supports.length }}</span>
-          <i class="icon-keyboard_arrow_right"></i>
         </div>
       </div>
     </div>
@@ -35,21 +31,20 @@ export default {
   data() {
     return {};
   },
-  created() {
-    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-  }
+  components: {},
+
+  methods: {}
 };
 
 </script>
 <style lang="scss" scoped>
-@import "../../common/css/index";
+@import "../../common/css/mixin";
 .header {
   color: #fff;
-  background-color: #999;
+  background-color: #000;
   .content-wrapper {
     padding: 24px 12px 18px 24px;
     font-size: 0;
-    position: relative;
     .avatar {
       display: inline-block;
       vertical-align: top;
@@ -88,49 +83,8 @@ export default {
       }
       .support {
         .icon {
-          display: inline-block;
-          vertical-align: top;
-          width: 12px;
-          height: 12px;
-          margin-right: 4px;
-          background-size: 12px 12px;
-          background-repeat: no-repeat;
-          &.decrease {
-            @include bg-image("decrease_1");
-          }
-          &.discount {
-            @include bg-image("discount_1");
-          }
-          &.guarantee {
-            @include bg-image("guarantee_1");
-          }
-          &.invoice {
-            @include bg-image("invoice_1");
-          }
-          &.special {
-            @include bg-image("special_1");
-          }
         }
         .text {
-          font-size: 10px;
-          line-height: 12px;
-        }
-      }
-      .support-count {
-        position: absolute;
-        right: 12px;
-        bottom: 18px;
-        padding: 0 8px;
-        height: 24px;
-        line-height: 24px;
-        border-radius: 14px;
-        text-align: center;
-        background: rgba(0, 0, 0, 0.2);
-        .count {
-          font-size: 10px;
-        }
-        .icon-keyboard_arrow_right {
-          font-size: 10px;
         }
       }
     }

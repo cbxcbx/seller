@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <sell-header></sell-header>
+    <sell-header :seller="seller"></sell-header>
     <div class="tab border-1px">
       <div class="tab-item">
         <router-link to="/goods">商品</router-link>
@@ -18,10 +18,26 @@
 
 <script>
 import sellHeader from './components/header/header';
+const ERROR_OK = 0;
 export default {
   name: 'App',
+  data() {
+    return {
+      seller: {}
+    };
+  },
   components: {
     sellHeader
+  },
+  created() {
+    this.$http.get('/api/seller').then((response) => {
+      response = response.body;
+      if (ERROR_OK === response.errno) {
+        this.seller = response.data;
+      };
+    }, (response) => {
+
+    });
   }
 };
 </script>
@@ -32,7 +48,6 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
 }
 .tab {
   display: flex;
