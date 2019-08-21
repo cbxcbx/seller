@@ -14,17 +14,38 @@
           <span class="icon" :class="classMap[seller.supports[0].type]"></span>
           <span class="text">{{ seller.supports[0].description}}</span>
         </div>
-        <div v-if="seller.supports" class="support-count">
+        <div v-if="seller.supports" class="support-count" @click="showDetail">
           <span class="count">{{ seller.supports.length }}</span>
           <i class="icon-keyboard_arrow_right"></i>
         </div>
       </div>
     </div>
-    <div class="bulletin-wrapper"></div>
+    <div class="bulletin-wrapper" @click="showDetail">
+      <span class="bulletin-title"></span>
+      <span class="bulletin-content">{{ seller.bulletin }}</span>
+      <i class="icon-keyboard_arrow_right"></i>
+    </div>
+    <div class="background">
+      <img :src="seller.avatar" width="100%" height="100%" />
+    </div>
+    <div class="detail" v-show="detailShow">
+      <div class="detail-wrapper clearfix">
+        <div class="detail-main">
+          <h1 class="name">{{ seller.name }}</h1>
+          <div class="star-component">
+            <star :size="24" :score="seller.score"></star>
+          </div>
+        </div>
+      </div>
+      <div class="detail-close">
+        <i class="icon-close"></i>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import star from '../star/star';
 export default {
   name: 'SellHeader',
   props: {
@@ -33,10 +54,20 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      detailShow: false
+    };
+  },
+  methods: {
+    showDetail() {
+      this.detailShow = true;
+    }
   },
   created() {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+  },
+  components: {
+    star
   }
 };
 
@@ -45,7 +76,9 @@ export default {
 @import "../../common/css/index";
 .header {
   color: #fff;
-  background-color: #999;
+  position: relative;
+  background: rgba(7, 17, 27, 0.5);
+  overflow: hidden;
   .content-wrapper {
     padding: 24px 12px 18px 24px;
     font-size: 0;
@@ -119,20 +152,108 @@ export default {
       .support-count {
         position: absolute;
         right: 12px;
-        bottom: 18px;
+        bottom: 14px;
         padding: 0 8px;
         height: 24px;
         line-height: 24px;
         border-radius: 14px;
         text-align: center;
+        border-radius: 14px;
         background: rgba(0, 0, 0, 0.2);
         .count {
+          vertical-align: top;
           font-size: 10px;
         }
         .icon-keyboard_arrow_right {
+          margin-left: 2px;
+          line-height: 24px;
           font-size: 10px;
         }
       }
+    }
+  }
+  .bulletin-wrapper {
+    position: relative;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 22px 0 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(7, 17, 27, 0.2);
+    .bulletin-title {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 8px;
+      width: 22px;
+      height: 12px;
+      background-size: 22px 12px;
+      background-repeat: no-repeat;
+      @include bg-image("bulletin");
+    }
+    .bulletin-content {
+      vertical-align: top;
+      margin: 0 4px;
+      font-size: 10px;
+    }
+    .icon-keyboard_arrow_right {
+      position: absolute;
+      right: 12px;
+      font-size: 10px;
+      top: 8px;
+    }
+  }
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(10px);
+  }
+  .detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: auto;
+    background: rgba(7, 17, 27, 0.8);
+    text-align: center;
+    .detail-wrapper {
+      width: 100%;
+      min-height: 100%;
+      .detail-main {
+        margin-top: 64px;
+        padding-bottom: 64px;
+        .name {
+          font-size: 16px;
+          font-weight: 700;
+          line-height: 16px;
+        }
+        .star-component {
+          margin: 16px 0 28px;
+        }
+      }
+    }
+    .clearfix::after {
+      display: block;
+      content: ".";
+      height: 0;
+      clear: both;
+      visibility: hidden;
+    }
+    .detail-close {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      font-size: 32px;
+      text-align: center;
+      margin: -64px auto 0 auto;
+      clear: both;
+      height: 64px;
     }
   }
 }
