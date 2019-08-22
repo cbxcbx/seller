@@ -11,7 +11,7 @@
         </div>
         <div class="description">{{ seller.description}}/{{seller.deliveryTime}}分钟送达</div>
         <div v-if="seller.supports" class="support">
-          <span class="icon" :class="classMap[seller.supports[0].type]"></span>
+          <sellerIcon :size="1" :index="seller.supports[0].type"></sellerIcon>
           <span class="text">{{ seller.supports[0].description}}</span>
         </div>
         <div v-if="seller.supports" class="support-count" @click="showDetail">
@@ -42,7 +42,7 @@
           </div>
           <ul v-if="seller.supports" class="supports">
             <li v-for="(item, index) in seller.supports" :key="index" class="supports-item">
-              <span class="icon" :class="classMap[item.type]"></span>
+              <sellerIcon :size="2" :index="item.type"></sellerIcon>
               <span class="text">{{ item.description}}</span>
             </li>
           </ul>
@@ -65,6 +65,7 @@
 
 <script>
 import star from '../star/star';
+import sellerIcon from '../icon/icon';
 export default {
   name: 'SellHeader',
   props: {
@@ -85,11 +86,9 @@ export default {
       this.detailShow = false;
     }
   },
-  created() {
-    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-  },
   components: {
-    star
+    star,
+    sellerIcon
   }
 };
 
@@ -142,30 +141,6 @@ export default {
         line-height: 12px;
       }
       .support {
-        .icon {
-          display: inline-block;
-          vertical-align: top;
-          width: 12px;
-          height: 12px;
-          margin-right: 4px;
-          background-size: 12px 12px;
-          background-repeat: no-repeat;
-          &.decrease {
-            @include bg-image("decrease_1");
-          }
-          &.discount {
-            @include bg-image("discount_1");
-          }
-          &.guarantee {
-            @include bg-image("guarantee_1");
-          }
-          &.invoice {
-            @include bg-image("invoice_1");
-          }
-          &.special {
-            @include bg-image("special_1");
-          }
-        }
         .text {
           font-size: 10px;
           line-height: 12px;
@@ -246,6 +221,7 @@ export default {
     .detail-wrapper {
       width: 100%;
       min-height: 100%;
+      overflow: auto;
       .detail-main {
         margin-top: 64px;
         padding-bottom: 64px;
@@ -284,30 +260,6 @@ export default {
             font-size: 0;
             &:last-child {
               margin-bottom: 0;
-            }
-            .icon {
-              display: inline-block;
-              vertical-align: top;
-              width: 16px;
-              height: 16px;
-              margin-right: 6px;
-              background-size: 16px 16px;
-              background-repeat: no-repeat;
-              &.decrease {
-                @include bg-image("decrease_2");
-              }
-              &.discount {
-                @include bg-image("discount_2");
-              }
-              &.guarantee {
-                @include bg-image("guarantee_2");
-              }
-              &.invoice {
-                @include bg-image("invoice_2");
-              }
-              &.special {
-                @include bg-image("special_2");
-              }
             }
             .text {
               line-height: 16px;
