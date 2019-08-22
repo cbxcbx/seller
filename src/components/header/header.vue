@@ -35,10 +35,29 @@
           <div class="star-component">
             <star :size="24" :score="seller.score"></star>
           </div>
+          <div class="title">
+            <div class="line"></div>
+            <div class="text">店铺信息</div>
+            <div class="line"></div>
+          </div>
+          <ul v-if="seller.supports" class="supports">
+            <li v-for="(item, index) in seller.supports" :key="index" class="supports-item">
+              <span class="icon" :class="classMap[item.type]"></span>
+              <span class="text">{{ item.description}}</span>
+            </li>
+          </ul>
+          <div class="title">
+            <div class="line"></div>
+            <div class="text">商家公告</div>
+            <div class="line"></div>
+          </div>
+          <div class="bulletin">
+            <div class="text">{{ seller.bulletin }}</div>
+          </div>
         </div>
       </div>
       <div class="detail-close">
-        <i class="icon-close"></i>
+        <i class="icon-close" @click="closeDetail"></i>
       </div>
     </div>
   </div>
@@ -61,6 +80,9 @@ export default {
   methods: {
     showDetail() {
       this.detailShow = true;
+    },
+    closeDetail() {
+      this.detailShow = false;
     }
   },
   created() {
@@ -221,7 +243,6 @@ export default {
     z-index: 1;
     overflow: auto;
     background: rgba(7, 17, 27, 0.8);
-    text-align: center;
     .detail-wrapper {
       width: 100%;
       min-height: 100%;
@@ -232,9 +253,75 @@ export default {
           font-size: 16px;
           font-weight: 700;
           line-height: 16px;
+          text-align: center;
         }
         .star-component {
-          margin: 16px 0 28px;
+          margin: 16px 0;
+          text-align: center;
+        }
+        .title {
+          display: flex;
+          margin: 28px auto 24px;
+          width: 80%;
+          .line {
+            flex: 1;
+            position: relative;
+            top: -6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          }
+          .text {
+            padding: 0 12px;
+            font-size: 14px;
+            font-weight: 700;
+          }
+        }
+        .supports {
+          width: 80%;
+          margin: 0 auto;
+          .supports-item {
+            padding: 0 12px;
+            margin-bottom: 12px;
+            font-size: 0;
+            &:last-child {
+              margin-bottom: 0;
+            }
+            .icon {
+              display: inline-block;
+              vertical-align: top;
+              width: 16px;
+              height: 16px;
+              margin-right: 6px;
+              background-size: 16px 16px;
+              background-repeat: no-repeat;
+              &.decrease {
+                @include bg-image("decrease_2");
+              }
+              &.discount {
+                @include bg-image("discount_2");
+              }
+              &.guarantee {
+                @include bg-image("guarantee_2");
+              }
+              &.invoice {
+                @include bg-image("invoice_2");
+              }
+              &.special {
+                @include bg-image("special_2");
+              }
+            }
+            .text {
+              line-height: 16px;
+              font-size: 12px;
+            }
+          }
+        }
+        .bulletin {
+          width: 80%;
+          margin: 0 auto;
+          .text {
+            font-size: 12px;
+            line-height: 24px;
+          }
         }
       }
     }
