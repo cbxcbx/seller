@@ -42,24 +42,22 @@
         </li>
       </ul>
     </div>
+    <shop-cart :deliveryPrice="3" :minPrice="20"></shop-cart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import sellerIcon from '../icon/icon';
+import shopCart from '../shopcart/shopcart';
 import BScroll from 'better-scroll';
 const ERROR_OK = 0;
 export default {
-  prop: {
-    seller: {
-      type: Object
-    }
-  },
   data() {
     return {
       goods: [],
       foodsHeightList: [],
-      scrollY: 0
+      scrollY: 0,
+      seller: {}
     };
   },
   created() {
@@ -77,7 +75,8 @@ export default {
     });
   },
   components: {
-    sellerIcon
+    sellerIcon,
+    shopCart
   },
 
   methods: {
