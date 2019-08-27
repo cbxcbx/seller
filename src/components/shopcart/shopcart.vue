@@ -15,17 +15,40 @@
         <div class="pay" :class="payClass">{{ payDesc }}</div>
       </div>
     </div>
-    <div class="ball-container">
-      <transition-group name="drop" tag="div">
-        <div class="ball" v-for="ball in balls" v-show="ball.show" :key="ball.index">
-          <div class="inner inner-hook"></div>
+    <!-- <div class="ball-container">
+      <transition
+        name="drop"
+        v-on:before-enter="beforeEnter"
+        v-on:enter="enter"
+        v-on:after-enter="afterEnter"
+      >
+        <div class="ball" v-show="balls.show">
+          <span class="inner inner-hook"></span>
         </div>
-      </transition-group>
+      </transition>
+    </div>-->
+    <div class="shopcart-list" v-show="listShow">
+      <div class="list-header">
+        <div class="text">购物车</div>
+        <div class="empty">清空</div>
+      </div>
+      <div class="list-content">
+        <ul>
+          <li class="good" v-for="(food,index) in selectFoods" :key="index">
+            <span class="foodname">{{ food.name }}</span>
+            <span class="price">￥{{ food.count * food.price }}</span>
+            <div class="cart-control-wrapper">
+              <cartControl :food="food"></cartControl>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import cartControl from '../cartcontrol/cartcontrol';
 export default {
   props: {
     selectFoods: {
@@ -45,29 +68,11 @@ export default {
   },
   data() {
     return {
-      balls: [
-        {
-          show: false,
-          index: 0
-        },
-        {
-          show: false,
-          index: 1
-        },
-        {
-          show: false,
-          index: 2
-        },
-        {
-          show: false,
-          index: 3
-        },
-        {
-          show: false,
-          index: 4
-        }
-      ],
-      dropballs: []
+      balls: {
+        show: false
+      },
+      dropballs: [],
+      fold: true
     };
   },
 
@@ -101,64 +106,71 @@ export default {
       } else {
         return 'enough';
       }
-    }
-  },
-  methods: {
-    drop(el) {
-      for (let i = 0; i < this.balls.length; i++) {
-        let ball = this.balls[i];
-        if (!ball.show) {
-          ball.show = true;
-          ball.el = el;
-          this.dropballs.push(ball);
-          return;
-        }
+    },
+    listShow() {
+      if (!this.totalCount) {
+        this.fold = true;
+        return false;
+      } else {
+        let show = !this.fold;
+        return show;
       }
     }
   },
-  transitions: {
-    drop: {
-      beforeEnter(el) {
-        let count = this.balls.length;
-        while (count--) {
-          let ball = this.balls[count];
-          if (ball.show) {
-            let rect = ball.el.getBoundingClientRect();
-            let x = rect.left - 32;
-            let y = (window.innerHeight - rect.top - 22);
-            el.style.display = '';
-            el.style.webkitTransform = `translated3d(0, ${y}px, 0)`;
-            el.style.transform = `translated3d(0, ${y}px, 0)`;
-            let inner = el.getElementsByClassName('inner-hook')[0];
-            inner.style.webkitTransform = `translated3d(0, ${x}px, 0)`;
-            inner.style.transform = `translated3d(0, ${x}px, 0)`;
-          }
-        }
-      },
-      enter(el) {
-        /* eslint-disable no-unused-vars */
-        let rf = el.offsetHeight;
-        this.$nextTick(() => {
-          el.style.webkitTransform = 'translated3d(0, 0, 0)';
-          el.style.transform = 'translated3d(0, 0, 0)';
-          let inner = el.getElementsByClassName('inner-hook')[0];
-          inner.style.webkitTransform = 'translated3d(0, 0, 0)';
-          inner.style.transform = 'translated3d(0, 0, 0)';
-        });
-      },
-      afterEnter(el) {
-        let ball = this.dropballs.shift();
-        if (ball) {
-          ball.show = false;
-          el.style.display = 'none';
-        }
+  components: {
+    cartControl
+  },
+  methods: {
+    drop(el) {
+      let ball = this.balls;
+      if (!ball.show) {
+        ball.show = true;
+        ball.el = el;
+        this.dropballs.push(ball);
+      }
+    },
+    beforeEnter: function(el, done) {
+      let ball = this.balls;
+      if (ball.show) {
+        let rect = ball.el.getBoundingClientRect();
+        let x = rect.left - 32;
+        let y = window.innerHeight - rect.top - 22;
+        el.style.display = '';
+        el.style.webkitTransform = `translate3d(0, -${y}px, 0)`;
+        el.style.transform = `translate3d(0, -${y}px, 0)`;
+        el.style.transition = 'all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)';
+        let inner = el.getElementsByClassName('inner-hook')[0];
+        inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+        inner.style.transform = `translate3d(${x}px, 0, 0)`;
+        inner.style.transition = 'all 0.4s linear';
+      }
+    },
+    enter: function(el, done) {
+      /* eslint-disable no-unused-vars */
+      let rf = el.offsetHeight;
+      this.$nextTick(() => {
+        el.style.webkitTransform = 'translate3d(0, 0, 0)';
+        el.style.transform = 'translate3d(0, 0, 0)';
+        el.style.transition = 'all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)';
+        let inner = el.getElementsByClassName('inner-hook')[0];
+        inner.style.webkitTransform = 'translate3d(0, 0, 0)';
+        inner.style.transform = 'translate3d(0, 0, 0)';
+        inner.style.transition = 'all 0.4s linear';
+      });
+      done();
+    },
+    afterEnter: function(el) {
+      let ball = this.dropballs.shift();
+      if (ball) {
+        ball.show = false;
+        el.style.display = 'none';
       }
     }
   }
 };
 </script>
 <style lang='scss' scoped>
-@import "../../common/css/index";
+@import '../../common/css/index';
 .shop-cart {
   position: fixed;
   bottom: 0;
@@ -267,18 +279,11 @@ export default {
       bottom: 22px;
       z-index: 200;
       .inner {
+        display: inline-block;
         width: 16px;
         height: 16px;
         border-radius: 50%;
         background: rgb(0, 160, 220);
-      }
-      &.drop-enter-active,
-      &.drop-leave-active {
-        transition: all 0.4s;
-      }
-      &.drop-enter,
-      &.drop-leave-to {
-        transition: all 0.4s;
       }
     }
   }
