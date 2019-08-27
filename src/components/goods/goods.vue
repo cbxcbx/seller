@@ -36,19 +36,23 @@
                   <span class="now">￥{{foods.price}}</span>
                   <span class="old" v-show="foods.oldPrice">￥ {{foods.oldPrice}}</span>
                 </div>
+                <div class="cart-control-wrapper">
+                  <cartControl v-on:cart-add="cartAdd" :food="foods"></cartControl>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shop-cart :deliveryPrice="3" :minPrice="20"></shop-cart>
+    <shop-cart ref="shopcart" :deliveryPrice="3" :minPrice="20" :selectFoods="selectFoods"></shop-cart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import sellerIcon from '../icon/icon';
 import shopCart from '../shopcart/shopcart';
+import cartControl from '../cartcontrol/cartcontrol';
 import BScroll from 'better-scroll';
 const ERROR_OK = 0;
 export default {
@@ -76,7 +80,8 @@ export default {
   },
   components: {
     sellerIcon,
-    shopCart
+    shopCart,
+    cartControl
   },
 
   methods: {
@@ -85,6 +90,7 @@ export default {
         click: true
       });
       this.foodScroll = new BScroll(this.$refs.foodsWrapper, {
+        click: true,
         probeType: 3
       });
       this.foodScroll.on('scroll', (pos) => {
@@ -108,6 +114,11 @@ export default {
         height += item.clientHeight;
         this.foodsHeightList.push(height);
       }
+    },
+    cartAdd(target) {
+      this.$nextTick(() => {
+        this.$refs['shopcart'].drop(target);
+      });
     }
   },
   computed: {
@@ -120,6 +131,17 @@ export default {
         }
       }
       return 0;
+    },
+    selectFoods() {
+      let foods = [];
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
     }
   }
 };
@@ -223,6 +245,11 @@ export default {
               font-size: 10px;
               color: rgb(147, 153, 159);
             }
+          }
+          .cart-control-wrapper {
+            position: absolute;
+            right: 0;
+            bottom: 12px;
           }
         }
       }
