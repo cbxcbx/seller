@@ -21,7 +21,7 @@
         <li v-for="(item, index) in goods" :key="index" class="food-list foods-scorll">
           <h1 class="title">{{ item.name }}</h1>
           <ul>
-            <li v-for="(foods,index) in item.foods" :key="index" class="food-item border-1px">
+            <li v-for="(foods,index) in item.foods" :key="index" class="food-item border-1px" @click="chooseFood(foods, $event)">
               <div class="food-image">
                 <img :src="foods.icon" width="57" height="57" />
               </div>
@@ -47,6 +47,7 @@
       </ul>
     </div>
     <shop-cart ref="shopcart" :deliveryPrice="3" :minPrice="20" :selectFoods="selectFoods"></shop-cart>
+    <food ref="foodDetail" :food="selectedFood"></food>
   </div>
 </template>
 
@@ -54,6 +55,7 @@
 import sellerIcon from '../icon/icon';
 import shopCart from '../shopcart/shopcart';
 import cartControl from '../cartcontrol/cartcontrol';
+import food from '../food/food';
 import BScroll from 'better-scroll';
 const ERROR_OK = 0;
 export default {
@@ -62,7 +64,8 @@ export default {
       goods: [],
       foodsHeightList: [],
       scrollY: 0,
-      seller: {}
+      seller: {},
+      selectedFood: {}
     };
   },
   created() {
@@ -82,7 +85,8 @@ export default {
   components: {
     sellerIcon,
     shopCart,
-    cartControl
+    cartControl,
+    food
   },
 
   methods: {
@@ -115,6 +119,13 @@ export default {
         height += item.clientHeight;
         this.foodsHeightList.push(height);
       }
+    },
+    chooseFood(food, event) {
+      if (!event._constructed) {
+        return false;
+      }
+      this.selectedFood = food;
+      this.$refs['foodDetail'].show();
     }
     // cartAdd(target) {
     //   this.$nextTick(() => {
