@@ -177,7 +177,6 @@ export default {
       }
       &.currentIndex {
         position: relative;
-        z-index: 10;
         margin-top: -1px;
         background: #fff;
         font-weight: 700;

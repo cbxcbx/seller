@@ -1,21 +1,22 @@
 <template>
-  <div class="shop-cart">
-    <div class="content">
-      <div class="content-left">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{'highlight':totalCount > 0}">
-            <i class="icon-shopping_cart" :class="{'highlight':totalCount > 0}"></i>
+  <div class="shop-cart-wrapper">
+    <div class="shop-cart">
+      <div class="content" @click="toggltList">
+        <div class="content-left">
+          <div class="logo-wrapper">
+            <div class="logo" :class="{'highlight':totalCount > 0}">
+              <i class="icon-shopping_cart" :class="{'highlight':totalCount > 0}"></i>
+            </div>
+            <div v-show="totalCount> 0" class="count">{{ totalCount }}</div>
           </div>
-          <div v-show="totalCount> 0" class="count">{{ totalCount }}</div>
+          <div class="price" :class="{'highlight':totalPrice > 0}">￥{{ totalPrice }}</div>
+          <div class="desc">另需配送费￥{{ deliveryPrice }}元</div>
         </div>
-        <div class="price" :class="{'highlight':totalPrice > 0}">￥{{ totalPrice }}</div>
-        <div class="desc">另需配送费￥{{ deliveryPrice }}元</div>
+        <div class="content-right" @click.stop.prevent="gotoPay">
+          <div class="pay" :class="payClass">{{ payDesc }}</div>
+        </div>
       </div>
-      <div class="content-right">
-        <div class="pay" :class="payClass">{{ payDesc }}</div>
-      </div>
-    </div>
-    <!-- <div class="ball-container">
+      <!-- <div class="ball-container">
       <transition
         name="drop"
         v-on:before-enter="beforeEnter"
@@ -26,29 +27,36 @@
           <span class="inner inner-hook"></span>
         </div>
       </transition>
-    </div>-->
-    <div class="shopcart-list" v-show="listShow">
-      <div class="list-header">
-        <div class="text">购物车</div>
-        <div class="empty">清空</div>
-      </div>
-      <div class="list-content">
-        <ul>
-          <li class="good" v-for="(food,index) in selectFoods" :key="index">
-            <span class="foodname">{{ food.name }}</span>
-            <span class="price">￥{{ food.count * food.price }}</span>
-            <div class="cart-control-wrapper">
-              <cartControl :food="food"></cartControl>
-            </div>
-          </li>
-        </ul>
-      </div>
+      </div>-->
+      <transition name="cartlist">
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <div class="text">购物车</div>
+            <div class="empty" @click="empty">清空</div>
+          </div>
+          <div class="list-content" ref="shopcartList">
+            <ul>
+              <li class="good" v-for="(food,index) in selectFoods" :key="index">
+                <span class="foodname">{{ food.name }}</span>
+                <span class="price">￥{{ food.count * food.price }}</span>
+                <div class="cart-control-wrapper">
+                  <cartControl :food="food"></cartControl>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </transition>
     </div>
+    <transition name="list-bg">
+      <div class="shop-list-bg" v-show="listShow" @click="closeMask"></div>
+    </transition>
   </div>
 </template>
 
 <script>
 import cartControl from '../cartcontrol/cartcontrol';
+import BScroll from 'better-scroll';
 export default {
   props: {
     selectFoods: {
@@ -72,7 +80,8 @@ export default {
         show: false
       },
       dropballs: [],
-      fold: true
+      fold: true,
+      listShow: false
     };
   },
 
@@ -106,14 +115,28 @@ export default {
       } else {
         return 'enough';
       }
-    },
-    listShow() {
+    }
+  },
+  watch: {
+    totalCount() {
       if (!this.totalCount) {
+        this.listShow = false;
         this.fold = true;
         return false;
-      } else {
-        let show = !this.fold;
-        return show;
+      }
+    },
+    fold(newValue) {
+      this.listShow = !newValue;
+      if (!newValue) {
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.shopcartList, {
+              click: true
+            });
+          } else {
+            this.scroll.refresh();
+          }
+        });
       }
     }
   },
@@ -129,7 +152,7 @@ export default {
         this.dropballs.push(ball);
       }
     },
-    beforeEnter: function(el, done) {
+    beforeEnter: function (el, done) {
       let ball = this.balls;
       if (ball.show) {
         let rect = ball.el.getBoundingClientRect();
@@ -145,7 +168,7 @@ export default {
         inner.style.transition = 'all 0.4s linear';
       }
     },
-    enter: function(el, done) {
+    enter: function (el, done) {
       /* eslint-disable no-unused-vars */
       let rf = el.offsetHeight;
       this.$nextTick(() => {
@@ -159,23 +182,41 @@ export default {
       });
       done();
     },
-    afterEnter: function(el) {
+    afterEnter: function (el) {
       let ball = this.dropballs.shift();
       if (ball) {
         ball.show = false;
         el.style.display = 'none';
       }
+    },
+    toggltList() {
+      if (!this.totalCount) {
+        return false;
+      } else {
+        this.fold = !this.fold;
+      }
+    },
+    empty() {
+      this.selectFoods.forEach((food) => {
+        food.count = 0;
+      });
+    },
+    closeMask() {
+      this.fold = true;
+    },
+    gotoPay() {
+      window.alert(`你需要支付￥${this.totalPrice}元`);
     }
   }
 };
 </script>
 <style lang='scss' scoped>
-@import '../../common/css/index';
+@import "../../common/css/index";
 .shop-cart {
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 10;
+  z-index: 99;
   width: 100%;
   height: 48px;
   .content {
@@ -286,6 +327,94 @@ export default {
         background: rgb(0, 160, 220);
       }
     }
+  }
+  .shopcart-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    transform: translate3d(0, -100%, 0);
+    &.cartlist-enter-to,
+    &.cartlist-leave {
+      transform: translate3d(0, -100%, 0);
+    }
+    &.cartlist-enter,
+    &.cartlist-leave-to {
+      transform: translate3d(0, 0, 0);
+    }
+    &.cartlist-enter-active,
+    &.cartlist-leave-active {
+      transition: all 0.4s;
+    }
+    .list-header {
+      height: 40px;
+      line-height: 40px;
+      padding: 0 18px;
+      background: #f3f5f7;
+      border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+      .text {
+        float: left;
+        font-size: 14px;
+        line-height: 40px;
+        color: rgb(7, 17, 27);
+      }
+      .empty {
+        float: right;
+        line-height: 40px;
+        font-size: 12px;
+        color: rgb(0, 160, 220);
+      }
+    }
+    .list-content {
+      padding: 0 18px;
+      max-height: 217px;
+      overflow: hidden;
+      background: #fff;
+      .good {
+        position: relative;
+        padding: 12px 0;
+        box-sizing: border-box;
+        @include border-1px(rgba(7, 17, 27, 0.1));
+        .foodname {
+          line-height: 24px;
+          font-size: 14px;
+          color: rgb(7, 17, 27);
+        }
+        .price {
+          position: absolute;
+          right: 90px;
+          bottom: 12px;
+          line-height: 24px;
+          font-size: 14px;
+          font-weight: 700;
+          color: rgb(240, 20, 20);
+        }
+        .cart-control-wrapper {
+          position: absolute;
+          right: 0;
+          bottom: 6px;
+        }
+      }
+    }
+  }
+}
+.shop-list-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  background: rgba(7, 17, 27, 0.6);
+  &.list-bg-enter,
+  &.list-bg-leave-to {
+    opacity: 0;
+  }
+
+  &.list-bg-enter-active,
+  &.list-bg-leave-active {
+    transition: all 0.5s;
   }
 }
 </style>
