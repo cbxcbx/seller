@@ -1,4 +1,4 @@
-export function formatDate(date, fmt) {
+export function formatDateTime (date, fmt) {
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
   }
@@ -15,6 +15,7 @@ export function formatDate(date, fmt) {
       fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : padLeftZero(str));
     }
   }
+  return fmt;
 };
 
 function padLeftZero(str) {
