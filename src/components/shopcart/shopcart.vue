@@ -16,18 +16,20 @@
           <div class="pay" :class="payClass">{{ payDesc }}</div>
         </div>
       </div>
-      <!-- <div class="ball-container">
-      <transition
-        name="drop"
-        v-on:before-enter="beforeEnter"
-        v-on:enter="enter"
-        v-on:after-enter="afterEnter"
-      >
-        <div class="ball" v-show="balls.show">
-          <span class="inner inner-hook"></span>
+      <div class="ball-container">
+        <div v-for="(ball, index) in balls" :key="index">
+          <transition
+            name="drop"
+            v-on:before-enter="beforeEnter"
+            v-on:enter="enter"
+            v-on:after-enter="afterEnter"
+          >
+            <div class="ball" v-show="ball.show">
+              <span class="inner inner-hook"></span>
+            </div>
+          </transition>
         </div>
-      </transition>
-      </div>-->
+      </div>
       <transition name="cartlist">
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
@@ -76,9 +78,23 @@ export default {
   },
   data() {
     return {
-      balls: {
-        show: false
-      },
+      balls: [
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        }
+      ],
       dropballs: [],
       fold: true,
       listShow: false
@@ -145,27 +161,33 @@ export default {
   },
   methods: {
     drop(el) {
-      let ball = this.balls;
-      if (!ball.show) {
-        ball.show = true;
-        ball.el = el;
-        this.dropballs.push(ball);
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.balls[i];
+        if (!ball.show) {
+          ball.show = true;
+          ball.el = el;
+          this.dropballs.push(ball);
+          return;
+        }
       }
     },
     beforeEnter: function (el, done) {
-      let ball = this.balls;
-      if (ball.show) {
-        let rect = ball.el.getBoundingClientRect();
-        let x = rect.left - 32;
-        let y = window.innerHeight - rect.top - 22;
-        el.style.display = '';
-        el.style.webkitTransform = `translate3d(0, -${y}px, 0)`;
-        el.style.transform = `translate3d(0, -${y}px, 0)`;
-        el.style.transition = 'all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)';
-        let inner = el.getElementsByClassName('inner-hook')[0];
-        inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
-        inner.style.transform = `translate3d(${x}px, 0, 0)`;
-        inner.style.transition = 'all 0.4s linear';
+      let count = this.balls.length;
+      while (count--) {
+        let ball = this.balls[count];
+        if (ball.show) {
+          let rect = ball.el.getBoundingClientRect();
+          let x = rect.left - 32;
+          let y = -(window.innerHeight - rect.top - 22);
+          el.style.display = '';
+          el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
+          el.style.transform = `translate3d(0, ${y}px, 0)`;
+          let inner = el.getElementsByClassName('inner-hook')[0];
+          el.style.transition = 'all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)';
+          inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+          inner.style.transform = `translate3d(${x}px, 0, 0)`;
+          inner.style.transition = 'all 0.4s linear';
+        }
       }
     },
     enter: function (el, done) {
@@ -174,13 +196,11 @@ export default {
       this.$nextTick(() => {
         el.style.webkitTransform = 'translate3d(0, 0, 0)';
         el.style.transform = 'translate3d(0, 0, 0)';
-        el.style.transition = 'all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)';
         let inner = el.getElementsByClassName('inner-hook')[0];
         inner.style.webkitTransform = 'translate3d(0, 0, 0)';
         inner.style.transform = 'translate3d(0, 0, 0)';
-        inner.style.transition = 'all 0.4s linear';
+        el.addEventListener('transitionend', done);
       });
-      done();
     },
     afterEnter: function (el) {
       let ball = this.dropballs.shift();
