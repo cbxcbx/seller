@@ -35,7 +35,10 @@ export default {
     itemClasses() {
       let result = [];
       let score = Math.floor(this.score * 2) / 2;
-      let hasDecimal = score % 1 !== 0;
+      let hasDecimal = score % 1 !== 0 || NaN;
+      if (isNaN(score)) {
+        hasDecimal = false;
+      }
       let integer = Math.floor(score);
       for (let i = integer; i > 0; i--) {
         result.push(CLS_ON);

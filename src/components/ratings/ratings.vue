@@ -109,7 +109,7 @@ export default {
     this.$http.get('/api/seller').then((response) => {
       response = response.body;
       if (ERROR_OK === response.errno) {
-        this.seller = response.data;
+        this.seller = Object.assign({}, this.seller, response.data);
       };
     }, (response) => {
     });

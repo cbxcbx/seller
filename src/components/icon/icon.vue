@@ -104,6 +104,25 @@ export default {
     }
   }
   .icon-4 {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    background-size: 16px 16px;
+    &.decrease {
+      @include bg-image("decrease_4");
+    }
+    &.discount {
+      @include bg-image("discount_4");
+    }
+    &.guarantee {
+      @include bg-image("guarantee_4");
+    }
+    &.invoice {
+      @include bg-image("invoice_4");
+    }
+    &.special {
+      @include bg-image("special_4");
+    }
   }
 }
 </style>
