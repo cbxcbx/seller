@@ -96,10 +96,10 @@ export default {
     };
   },
   created() {
-    this.$http.get('/api/seller').then((response) => {
+    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
       response = response.body;
       if (ERROR_OK === response.errno) {
-        this.seller = Object.assign({}, this.seller, response.data);
+        this.seller = Object.assign({}, this.seller, response.data.seller);
         this.favorite = loadFromLocal(this.seller.id, 'favorite', false);
         this.$nextTick(() => {
           if (!this.scroll) {

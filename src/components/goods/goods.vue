@@ -69,10 +69,10 @@ export default {
     };
   },
   created() {
-    this.$http.get('/api/goods').then((response) => {
+    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/goods').then((response) => {
       response = response.body;
       if (ERROR_OK === response.errno) {
-        this.goods = response.data;
+        this.goods = response.data.goods;
         this.$nextTick(() => {
           this._initBScroll();
           this._calculateHeight();

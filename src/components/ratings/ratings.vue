@@ -106,17 +106,17 @@ export default {
     ratingselect
   },
   created() {
-    this.$http.get('/api/seller').then((response) => {
+    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
       response = response.body;
       if (ERROR_OK === response.errno) {
-        this.seller = Object.assign({}, this.seller, response.data);
+        this.seller = Object.assign({}, this.seller, response.data.seller);
       };
     }, (response) => {
     });
-    this.$http.get('/api/ratings').then((response) => {
+    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/ratings').then((response) => {
       response = response.body;
       if (ERROR_OK === response.errno) {
-        this.ratings = response.data;
+        this.ratings = response.data.ratings;
         this.$nextTick(() => {
           this._initScroll();
         });
