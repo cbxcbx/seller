@@ -21,7 +21,12 @@
         <li v-for="(item, index) in goods" :key="index" class="food-list foods-scorll">
           <h1 class="title">{{ item.name }}</h1>
           <ul>
-            <li v-for="(foods,index) in item.foods" :key="index" class="food-item border-1px" @click="chooseFood(foods, $event)">
+            <li
+              v-for="(foods,index) in item.foods"
+              :key="index"
+              class="food-item border-1px"
+              @click="chooseFood(foods, $event)"
+            >
               <div class="food-image">
                 <img :src="foods.icon" width="57" height="57" />
               </div>
@@ -51,12 +56,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-import sellerIcon from '../icon/icon';
-import shopCart from '../shopcart/shopcart';
-import cartControl from '../cartcontrol/cartcontrol';
-import food from '../food/food';
-import BScroll from 'better-scroll';
-const ERROR_OK = 0;
+import sellerIcon from "../icon/icon";
+import shopCart from "../shopcart/shopcart";
+import cartControl from "../cartcontrol/cartcontrol";
+import food from "../food/food";
+import BScroll from "better-scroll";
+import data from "../../../data.json";
+// const ERROR_OK = 0;
 export default {
   data() {
     return {
@@ -68,18 +74,19 @@ export default {
     };
   },
   created() {
-    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/goods').then((response) => {
-      response = response.body;
-      if (ERROR_OK === response.errno) {
-        this.goods = response.data.goods;
-        this.$nextTick(() => {
-          this._initBScroll();
-          this._calculateHeight();
-        });
-      };
-    }, (response) => {
-
+    // this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/goods').then((response) => {
+    // response = response.body;
+    // if (ERROR_OK === response.errno) {
+    // this.goods = response.data.goods;
+    this.goods = data.goods;
+    this.$nextTick(() => {
+      this._initBScroll();
+      this._calculateHeight();
     });
+    // };
+    // }, (response) => {
+
+    // });
   },
   components: {
     sellerIcon,
@@ -97,7 +104,7 @@ export default {
         click: true,
         probeType: 3
       });
-      this.foodScroll.on('scroll', (pos) => {
+      this.foodScroll.on("scroll", pos => {
         this.scrollY = Math.abs(Math.round(pos.y));
       });
     },
@@ -105,12 +112,16 @@ export default {
       if (!e._constructed) {
         return;
       }
-      let scrollList = this.$refs.foodsWrapper.getElementsByClassName('foods-scorll');
+      let scrollList = this.$refs.foodsWrapper.getElementsByClassName(
+        "foods-scorll"
+      );
       let ele = scrollList[index];
       this.foodScroll.scrollToElement(ele, 300);
     },
     _calculateHeight() {
-      let scrollList = this.$refs.foodsWrapper.getElementsByClassName('foods-scorll');
+      let scrollList = this.$refs.foodsWrapper.getElementsByClassName(
+        "foods-scorll"
+      );
       let height = 0;
       this.foodsHeightList.push(height);
       for (let i = 0; i < scrollList.length; i++) {
@@ -124,11 +135,11 @@ export default {
         return false;
       }
       this.selectedFood = food;
-      this.$refs['foodDetail'].show();
+      this.$refs["foodDetail"].show();
     },
     cartAdd(target) {
       this.$nextTick(() => {
-        this.$refs['shopcart'].drop(target);
+        this.$refs["shopcart"].drop(target);
       });
     }
   },
@@ -145,8 +156,8 @@ export default {
     },
     selectFoods() {
       let foods = [];
-      this.goods.forEach((good) => {
-        good.foods.forEach((food) => {
+      this.goods.forEach(good => {
+        good.foods.forEach(food => {
           if (food.count) {
             foods.push(food);
           }
@@ -156,7 +167,6 @@ export default {
     }
   }
 };
-
 </script>
 <style lang='scss' scoped>
 @import "../../common/css/index";

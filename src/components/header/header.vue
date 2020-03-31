@@ -86,6 +86,9 @@ export default {
       this.detailShow = false;
     }
   },
+  created() {
+    console.log(this.seller);
+  },
   components: {
     star,
     sellerIcon
