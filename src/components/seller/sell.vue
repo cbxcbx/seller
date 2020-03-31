@@ -76,13 +76,14 @@
 </template>
 
 <script>
-import star from '../star/star';
-import split from '../split/split';
-import sellerIcon from '../icon/icon';
-import BScroll from 'better-scroll';
-import { saveToLocal, loadFromLocal } from '../../common/js/store';
-import { urlParse } from '../../common/js/util';
-const ERROR_OK = 0;
+import star from "../star/star";
+import split from "../split/split";
+import sellerIcon from "../icon/icon";
+import BScroll from "better-scroll";
+import { saveToLocal, loadFromLocal } from "../../common/js/store";
+import { urlParse } from "../../common/js/util";
+import data from "../../../data.json";
+// const ERROR_OK = 0;
 export default {
   data() {
     return {
@@ -96,43 +97,43 @@ export default {
     };
   },
   created() {
-    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
-      response = response.body;
-      if (ERROR_OK === response.errno) {
-        this.seller = Object.assign({}, this.seller, response.data.seller);
-        this.favorite = loadFromLocal(this.seller.id, 'favorite', false);
+    // this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
+    // response = response.body;
+    // if (ERROR_OK === response.errno) {
+    this.seller = Object.assign({}, this.seller, data.seller);
+    this.favorite = loadFromLocal(this.seller.id, "favorite", false);
+    this.$nextTick(() => {
+      if (!this.scroll) {
+        this.scroll = new BScroll(this.$refs.sellWrapper, {
+          click: true
+        });
+      } else {
+        this.scroll.refresh();
+      }
+      if (this.seller.pics) {
+        let picWidth = 120;
+        let margin = 6;
+        let width = (picWidth + margin) * this.seller.pics.length - margin;
+        this.$refs.picList.style.width = width + "px";
         this.$nextTick(() => {
-          if (!this.scroll) {
-            this.scroll = new BScroll(this.$refs.sellWrapper, {
-              click: true
+          if (!this.picScroll) {
+            this.picScroll = new BScroll(this.$refs.picWrapper, {
+              scrollX: true,
+              eventPassthrough: "vertical"
             });
           } else {
-            this.scroll.refresh();
-          }
-          if (this.seller.pics) {
-            let picWidth = 120;
-            let margin = 6;
-            let width = (picWidth + margin) * this.seller.pics.length - margin;
-            this.$refs.picList.style.width = width + 'px';
-            this.$nextTick(() => {
-              if (!this.picScroll) {
-                this.picScroll = new BScroll(this.$refs.picWrapper, {
-                  scrollX: true,
-                  eventPassthrough: 'vertical'
-                });
-              } else {
-                this.picScroll.refresh();
-              }
-            });
+            this.picScroll.refresh();
           }
         });
-      };
-    }, (response) => {
+      }
     });
+    // };
+    // }, (response) => {
+    // });
   },
   computed: {
     favoriteText() {
-      return this.favorite ? '已收藏' : '收藏';
+      return this.favorite ? "已收藏" : "收藏";
     }
   },
   components: {
@@ -147,11 +148,10 @@ export default {
         return false;
       }
       this.favorite = !this.favorite;
-      saveToLocal(this.seller.id, 'favorite', this.favorite);
+      saveToLocal(this.seller.id, "favorite", this.favorite);
     }
   }
 };
-
 </script>
 <style lang='scss' scoped>
 @import "../../common/css/index";

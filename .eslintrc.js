@@ -25,7 +25,10 @@ module.exports = {
     'generator-star-spacing': 'off',
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    "indent": [0, 4], //缩进风格
     'semi': ['error', 'always'],
+    "quotes": [0, "single"], //引号类型 `` "" ''
+    "quote-props":[0, "always"], //对象字面量中的属性名是否强制双引号
     'space-before-function-paren': ["error", {
       'named': 'ignore',
       "anonymous": "ignore",

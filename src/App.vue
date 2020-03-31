@@ -19,10 +19,11 @@
 </template>
 
 <script>
-import sellHeader from './components/header/header';
-const ERROR_OK = 0;
+import sellHeader from "./components/header/header";
+import data from "../data.json";
+// const ERROR_OK = 0;
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
       seller: {}
@@ -32,14 +33,14 @@ export default {
     sellHeader
   },
   created() {
-    this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
-      response = response.body;
-      if (ERROR_OK === response.errno) {
-        this.seller = response.data.seller;
-      };
-    }, (response) => {
+    // this.$http.get('https://www.easy-mock.com/mock/5d6c858aff259b2c4210309b/seller/api/seller').then((response) => {
+    // response = response.body;
+    // if (ERROR_OK === response.errno) {
+    this.seller = data.seller;
+    // };
+    // }, (response) => {
 
-    });
+    // });
   }
 };
 </script>
